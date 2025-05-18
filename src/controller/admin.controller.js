@@ -152,6 +152,13 @@ export const deleteAlbum = async (req, res, next) => {
 				$pull: { albums: album._id },				// remove that album reference from artist
 			});
 		await Album.findByIdAndDelete(id);					// delete the album
+		
+		if (album.imageUrl) {								// Delete image from Cloudinary
+			const imagePublicId = getCloudinaryPublicId(album.imageUrl);
+			if (imagePublicId) {
+				await cloudinary.uploader.destroy(imagePublicId);
+			}
+    	}
 		res.status(200).json({ message: "Album deleted successfully" });
 	} catch (error) {
 		console.log("Error in deleteAlbum", error);
@@ -191,9 +198,32 @@ export const createArtist = async (req, res, next) => {
 export const deleteArtist = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		await Song.deleteMany({ artist: id });
-		await Album.deleteMany({ artist: id });
-		await Artist.findByIdAndDelete(id);
+		const artist = await Artist.findById(id);
+		const albumsByArtist = await Album.find({ artist: id });
+		albumsByArtist.forEach(async (album) => {
+			const songsInAlbum = await Song.find({ album: album._id });
+			for (let i = 0; i < songsInAlbum.length; i++) {
+				await deleteSongById(songsInAlbum[i]._id);		// delete all songs in the album
+			}
+			await Album.findByIdAndDelete(album._id);			// delete the album
+
+			if (album.imageUrl) {								// Delete image from Cloudinary
+					const imagePublicId = getCloudinaryPublicId(album.imageUrl);
+				if (imagePublicId) {
+					await cloudinary.uploader.destroy(imagePublicId);
+				}
+    		}
+		}
+	);
+		await Artist.findByIdAndDelete(id);				// delete the artist						
+
+		if (artist.imageUrl) {								// Delete image from Cloudinary
+			const imagePublicId = getCloudinaryPublicId(artist.imageUrl);
+			if (imagePublicId) {
+				await cloudinary.uploader.destroy(imagePublicId);
+			}
+    	}
+		
 		res.status(200).json({ message: "Artist deleted successfully" });
 	} catch (error) {
 		console.log("Error in deleteArtist", error);
