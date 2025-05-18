@@ -1,4 +1,5 @@
 import {Favorite} from "../models/favorite.model.js";
+import { Song } from "../models/song.model.js";
 
 export const addFavoriteSong = async (req, res, next) => {
     
@@ -21,8 +22,9 @@ export const getFavoriteSongs = async (req, res, next) => {
         const {user} = req.params;
 
         const favorites = await Favorite.find({ user: user }).populate("song");
+        const favoriteSongs = await Song.find({ _id: { $in: favorites.map(fav => fav.song) } }).populate("artist").populate("album");
 
-        res.status(200).json(favorites);
+        res.status(200).json({favorites, favoriteSongs});
     } catch (error) {
         next(error);
     }

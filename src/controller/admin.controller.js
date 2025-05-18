@@ -89,6 +89,22 @@ const deleteSongById = async (songId) => {
         $pull: { songs: song._id },
     });
 
+	// Delete image from Cloudinary
+    if (song.imageUrl) {
+        const imagePublicId = getCloudinaryPublicId(song.imageUrl);
+        if (imagePublicId) {
+            await cloudinary.uploader.destroy(imagePublicId);
+        }
+    }
+
+    // Delete audio from Cloudinary
+    if (song.audioUrl) {
+        const audioPublicId = getCloudinaryPublicId(song.audioUrl);
+        if (audioPublicId) {
+            await cloudinary.uploader.destroy(audioPublicId, { resource_type: "video" });
+        }
+    }
+
     await Song.findByIdAndDelete(songId);
 };
 
@@ -209,3 +225,17 @@ export const updateRole = async (req, res, next) => {
 export const checkAdmin = async (req, res, next) => {
 	res.status(200).json({ admin: true });
 };
+
+function getCloudinaryPublicId(url) {
+    // Example: https://res.cloudinary.com/demo/video/upload/v1234567890/folder/filename.mp3
+    // Extract 'folder/filename' (without extension and version)
+    try {
+        const parts = url.split('/');
+        // Remove version and extension
+        const versionIndex = parts.findIndex(p => /^v\d+$/.test(p));
+        const publicIdWithExt = parts.slice(versionIndex + 1).join('/');
+        return publicIdWithExt.replace(/\.[^/.]+$/, ''); // remove extension
+    } catch {
+        return null;
+    }
+}
