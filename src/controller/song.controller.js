@@ -11,6 +11,27 @@ export const getAllSongs = async (req, res, next) => {
 	}
 };
 
+export const getSongsByAlbumId = async (req, res, next) => {
+    const { albumId } = req.params;
+    try {
+        const songs = await Song.find({ album: albumId }).populate("artist").populate("album").sort({ createdAt: -1 });
+        res.json(songs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getSongsByArtistId = async (req, res, next) => {
+    const { artistId } = req.params;
+    try {
+        const songs = await Song.find({ artist: artistId }).populate("artist").populate("album").sort({ createdAt: -1 });
+        res.json(songs);
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
 export const getFeaturedSongs = async (req, res, next) => {
 	try {
 		// fetch 6 random songs
