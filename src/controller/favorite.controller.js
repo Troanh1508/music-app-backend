@@ -8,7 +8,20 @@ export const getFavoriteSongs = async (req, res, next) => {
         const favorites = await Favorite.find({ user: user }).populate("song");
         const favoriteSongs = await Song.find({ _id: { $in: favorites.map(fav => fav.song) } }).populate("artist").populate("album");
 
-        res.status(200).json({favoriteSongs});
+        res.status(200).json(favoriteSongs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getFavoriteSongsMobile = async (req, res, next) => {
+    try {
+        const {user} = req.params;
+
+        const favorites = await Favorite.find({ user: user }).populate("song");
+        const favoriteSongs = await Song.find({ _id: { $in: favorites.map(fav => fav.song) } }).populate("artist").populate("album");
+
+        res.status(200).json(favoriteSongs);
     } catch (error) {
         next(error);
     }

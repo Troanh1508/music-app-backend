@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { getFavoriteSongs, toggleFavoriteSong } from "../controller/favorite.controller.js";
+import { getFavoriteSongs, toggleFavoriteSong, getFavoriteSongsMobile } from "../controller/favorite.controller.js";
 
 const router = Router();
 
-router.use(protectRoute);
-router.get("/:user", getFavoriteSongs);
-router.post("/", toggleFavoriteSong);
+router.get("/:user", protectRoute, getFavoriteSongs);
+router.post("/", protectRoute, toggleFavoriteSong);
+router.get("/mobile/:user", getFavoriteSongsMobile); // For mobile compatibility
 
 export default router;
