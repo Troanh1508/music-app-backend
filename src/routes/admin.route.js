@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkAdmin, createAlbum, createArtist, createSong, deleteAlbum, deleteSong, deleteArtist, updateRole } from "../controller/admin.controller.js";
+import { checkAdmin, createAlbum, createArtist, createSong, deleteAlbum, deleteSong, deleteArtist, updateRole, deleteUser } from "../controller/admin.controller.js";
 import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = Router();
@@ -18,5 +18,6 @@ router.post("/artists", createArtist);
 router.delete("/artists/:id", deleteArtist);
 
 router.patch("/users/:id/role", updateRole);
+router.delete("/users/:id", deleteUser);
 
 export default router;

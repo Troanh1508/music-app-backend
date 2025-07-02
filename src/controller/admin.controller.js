@@ -3,6 +3,7 @@ import { Album } from "../models/album.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import { Artist } from "../models/artist.model.js";
 import { User } from "../models/user.model.js";
+import { Favorite } from "../models/favorite.model.js";
 
 // helper function for cloudinary uploads
 const uploadToCloudinary = async (file) => {
@@ -250,6 +251,26 @@ export const updateRole = async (req, res, next) => {
         next(error);
         res.status(500).json({ message: 'Error updating role' });
     }
+};
+
+export const deleteUser = async (req, res, next) => {
+	const { id } = req.params;
+
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(404).json({ message: "User not found" });
+		}
+		const favorites = await Favorite.find({ user: id });
+		if (favorites.length > 0) {
+			await Favorite.deleteMany({ user: id }); // delete all favorites of the user
+		}
+		await User.findByIdAndDelete(id);
+		res.status(200).json({ message: "User deleted successfully" });
+	} catch (error) {
+		console.log("Error in deleteUser", error);
+		next(error);
+	}
 };
 
 export const checkAdmin = async (req, res, next) => {
