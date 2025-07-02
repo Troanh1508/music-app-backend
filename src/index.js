@@ -20,6 +20,7 @@ import albumRoutes from "./routes/album.route.js";
 import statRoutes from "./routes/stat.route.js";
 import artistRoutes from "./routes/artist.route.js"
 import favoriteRoutes from "./routes/favorite.route.js";
+import searchRoutes from "./routes/search.route.js";
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.use("/api/artists", artistRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/search", searchRoutes);
 
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "../frontend/dist")));
