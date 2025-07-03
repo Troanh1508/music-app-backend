@@ -13,8 +13,8 @@ export const searchAll = async (req, res) => {
     try {
     // Search songs, albums, and artists by name/title (case-insensitive)
     const [songs, albums, artists] = await Promise.all([
-      Song.find({ title: { $regex: query, $options: "i" } }).limit(10),
-      Album.find({ title: { $regex: query, $options: "i" } }).limit(10),
+      Song.find({ title: { $regex: query, $options: "i" } }).limit(10).populate("artist").populate("album"),
+      Album.find({ title: { $regex: query, $options: "i" } }).limit(10).populate("artist"),
       Artist.find({ name: { $regex: query, $options: "i" } }).limit(10),
     ]);
     res.status(200).json({ songs, albums, artists });

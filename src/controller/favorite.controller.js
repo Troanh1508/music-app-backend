@@ -47,3 +47,24 @@ export const toggleFavoriteSong = async (req, res, next) => {
     next(error);
   }
 };
+
+export const toggleFavoriteSongMobile = async (req, res, next) => {
+  try {
+    const { user, song } = req.body;
+
+    const exists = await Favorite.findOne({ user, song });
+
+    if (exists) {
+      // Remove from favorites
+      await Favorite.findOneAndDelete({ user, song });
+      return res.status(200).json({ message: "Song removed from favorites", favorited: false });
+    } else {
+      // Add to favorites
+      const favorite = new Favorite({ user, song });
+      await favorite.save();
+      return res.status(201).json({ message: "Song added to favorites", favorited: true });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
