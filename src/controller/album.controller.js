@@ -24,3 +24,15 @@ export const getAlbumById = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const getAlbumsByArtistId = async (req, res, next) => {
+    
+    try {
+		const { artistId } = req.params;
+        const albums = await Album.find({ artist: artistId }).populate("artist").sort({ createdAt: -1 });
+        res.json(albums);
+    }
+    catch (error) {
+        next(error);
+    }
+}

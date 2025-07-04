@@ -1,4 +1,5 @@
 import { Song } from "../models/song.model.js";
+import { Playlist } from "../models/playlist.model.js";
 
 export const getAllSongs = async (req, res, next) => {
 	try {
@@ -9,6 +10,22 @@ export const getAllSongs = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+};
+
+export const getSongById = async (req, res, next) => {
+    try {
+        const { songId } = req.params;
+
+        const song = await Song.findById(songId).populate("album").populate("artist");
+
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        res.status(200).json(song);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getSongsByAlbumId = async (req, res, next) => {
@@ -22,8 +39,8 @@ export const getSongsByAlbumId = async (req, res, next) => {
 }
 
 export const getSongsByArtistId = async (req, res, next) => {
-    const { artistId } = req.params;
     try {
+        const { artistId } = req.params;
         const songs = await Song.find({ artist: artistId }).populate("artist").populate("album").sort({ createdAt: -1 });
         res.json(songs);
     }
@@ -31,6 +48,23 @@ export const getSongsByArtistId = async (req, res, next) => {
         next(error);
     }
 }
+
+export const getSongsInPlaylist = async (req, res, next) => {
+  try {
+    const { playlistId } = req.params;
+
+    const playlist = await Playlist.findById(playlistId).select('songs');
+
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found' });
+    }
+    const songs = await Song.find({ _id: { $in: playlist.songs } }).populate("artist").populate("album");
+
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getFeaturedSongs = async (req, res, next) => {
 	try {
