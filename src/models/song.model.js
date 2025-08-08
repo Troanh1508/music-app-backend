@@ -8,7 +8,7 @@ const songSchema = new mongoose.Schema(
 		},
 		artist: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Artist', // Reference to the Artist schema
+			ref: 'Artist', 
 			required: true,
 		},
 		imageUrl: {
@@ -21,7 +21,7 @@ const songSchema = new mongoose.Schema(
 		},
 		genre: {
 			type: String,
-			required: false, // Optional field for song-specific genre
+			required: false, // Optional field 
 		},
 		album: {
 			type: mongoose.Schema.Types.ObjectId,
