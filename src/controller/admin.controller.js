@@ -63,6 +63,49 @@ export const createSong = async (req, res, next) => {
 	}
 };
 
+export const updateSong = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { title, artist, album, genre } = req.body;
+
+    // Find the song
+    const song = await Song.findById(id);
+    if (!song) {
+      return res.status(404).json({ message: "Song not found" });
+    }
+
+    // Handle optional file uploads
+    let imageUrl = song.imageUrl;
+    let audioUrl = song.audioUrl;
+    let duration = song.duration;
+
+    if (req.files?.imageFile) {
+      imageUrl = await uploadToCloudinary(req.files.imageFile);
+    }
+    if (req.files?.audioFile) {
+      const audioUpload = await cloudinary.uploader.upload(req.files.audioFile.tempFilePath, { resource_type: "auto" });
+      audioUrl = audioUpload.secure_url;
+      duration = `${Math.floor(audioUpload.duration/60)}:${Math.floor(audioUpload.duration%60)}`;
+    }
+
+    // Update song fields
+    song.title = title ?? song.title;
+    song.artist = artist ?? song.artist;
+    song.album = album ?? song.album;
+    song.genre = genre ?? song.genre;
+    song.imageUrl = imageUrl;
+    song.audioUrl = audioUrl;
+    song.duration = duration;
+
+    await song.save();
+
+    res.status(200).json(song);
+  } catch (error) {
+    console.log("Error in updateSong", error);
+    next(error);
+  }
+};
+
 export const deleteSong = async (req, res, next) => {
 	try {
 		const { id } = req.params;
