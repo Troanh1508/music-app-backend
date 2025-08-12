@@ -35,7 +35,10 @@ initializeSocket(httpServer);
 
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+		origin: [
+			"http://localhost:3000",
+			"https://music-app-web-frontend.onrender.com"
+		],
 		credentials: true,
 	})
 );
@@ -63,7 +66,7 @@ cron.schedule("0 * * * *", () => {
 				return;
 			}
 			for (const file of files) {
-				fs.unlink(path.join(tempDir, file), (err) => {});
+				fs.unlink(path.join(tempDir, file), (err) => { });
 			}
 		});
 	}
