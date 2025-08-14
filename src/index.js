@@ -36,8 +36,7 @@ initializeSocket(httpServer);
 app.use(
 	cors({
 		origin: [
-			"http://localhost:3000",
-			"https://music-app-web-frontend.onrender.com"
+			"http://localhost:3000"
 		],
 		credentials: true,
 	})
