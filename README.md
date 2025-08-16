@@ -27,4 +27,11 @@ npm install
 npm run dev
 ```
 
+## Demo
 Demo Web App: https://music-web-app-9xt9.onrender.com
+
+For Admin Dashboard, Login with:
+
+Username: admin@gmail.com
+
+Password: 123456
